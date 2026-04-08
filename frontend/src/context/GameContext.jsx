@@ -30,13 +30,11 @@ export function GameProvider({ children }) {
     setTimeout(() => setNotifications(prev => prev.filter(n => n.id !== id)), 4000);
   }, []);
 
-  const listenersRef = useRef(false);
+  // 用 ref 持有 addNotification，讓 effect 可以用 [] 作為 dependency
+  const addNotificationRef = useRef(addNotification);
+  useEffect(() => { addNotificationRef.current = addNotification; }, [addNotification]);
 
   useEffect(() => {
-    // 防止重複綁定
-    if (listenersRef.current) return;
-    listenersRef.current = true;
-
     socket.connect();
 
     const onConnect = () => setConnected(true);
@@ -80,25 +78,25 @@ export function GameProvider({ children }) {
 
     const onPrisonEnter = ({ message }) => {
       setIsPrisoner(true);
-      addNotification(message, 'error');
+      addNotificationRef.current(message, 'error');
     };
 
     const onPrisonAnnounce = ({ username, faction }) => {
-      addNotification(`🐢 ${username}（${faction.name}）被關進太平洋戰俘營！`, 'warning');
+      addNotificationRef.current(`🐢 ${username}（${faction.name}）被關進太平洋戰俘營！`, 'warning');
     };
 
     const onUserJoined = ({ username, faction }) => {
-      addNotification(`${faction.emoji} ${username} 加入了 ${faction.name}！`, 'info');
+      addNotificationRef.current(`${faction.emoji} ${username} 加入了 ${faction.name}！`, 'info');
     };
 
     const onBattleReset = (state) => {
       setFactions(state.factions);
       setCurrentTopic(state.currentTopic);
       setComments([]);
-      addNotification('🔔 新的一天！烽火台重置！開始新的戰役！', 'success');
+      addNotificationRef.current('🔔 新的一天！烽火台重置！開始新的戰役！', 'success');
     };
 
-    const onError = ({ message }) => addNotification(message, 'error');
+    const onError = ({ message }) => addNotificationRef.current(message, 'error');
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
@@ -130,9 +128,8 @@ export function GameProvider({ children }) {
       socket.off('user:joined', onUserJoined);
       socket.off('battle:reset', onBattleReset);
       socket.off('error', onError);
-      listenersRef.current = false;
     };
-  }, [addNotification]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const joinGame = useCallback((username, faction) => {
     const userData = { username, faction };

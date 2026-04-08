@@ -22,7 +22,7 @@ export default function ArenaPage() {
     setInputText('');
   };
 
-  const sortedComments = [...comments].sort((a, b) => b.timestamp - a.timestamp).slice(0, 80);
+  const sortedComments = [...comments].sort((a, b) => a.timestamp - b.timestamp).slice(-80);
 
   return (
     <div className="arena-page">
@@ -133,7 +133,7 @@ export default function ArenaPage() {
           <h3 className="sidebar-title">🏆 熱門戰狼發言</h3>
           <div className="top-comments">
             {[...comments]
-              .sort((a, b) => b.likes - a.likes)
+              .sort((a, b) => b.likes - a.likes || b.timestamp - a.timestamp)
               .slice(0, 5)
               .map((c, i) => {
                 const f = FACTIONS[c.faction];
