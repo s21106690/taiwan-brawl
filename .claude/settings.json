@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(npx create-vite@latest . --template react)",
+      "Bash(npx --yes create-vite@5.5.5 . --template react)",
+      "Bash(printf '\\\\n')",
+      "Bash(printf '\\\\n\\\\n')",
+      "Bash(npm install:*)",
+      "Bash(npx vite:*)",
+      "Bash(chmod +x \"/Users/a21106690/Desktop/Project Horizon/start.sh\")",
+      "Bash(node src/server.js)",
+      "Bash(echo \"Backend status: $?\")",
+      "Bash(npm run:*)"
+    ],
+    "additionalDirectories": [
+      "/Users/a21106690/Desktop/Project Horizon/frontend/src"
+    ]
+  }
+}

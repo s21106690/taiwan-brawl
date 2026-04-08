@@ -1,0 +1,9 @@
+{
+  "name": "taiwan-brawl",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build",
+    "start": "cd backend && npm install && node src/server.js",
+    "install:all": "cd frontend && npm install && cd ../backend && npm install"
+  }
+}
