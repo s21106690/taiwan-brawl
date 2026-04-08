@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import socket from '../socket';
 
 const GameContext = createContext(null);
@@ -30,86 +30,107 @@ export function GameProvider({ children }) {
     setTimeout(() => setNotifications(prev => prev.filter(n => n.id !== id)), 4000);
   }, []);
 
+  const listenersRef = useRef(false);
+
   useEffect(() => {
+    // 防止重複綁定
+    if (listenersRef.current) return;
+    listenersRef.current = true;
+
     socket.connect();
 
-    socket.on('connect', () => setConnected(true));
-    socket.on('disconnect', () => setConnected(false));
+    const onConnect = () => setConnected(true);
+    const onDisconnect = () => setConnected(false);
 
-    socket.on('game:state', (state) => {
+    const onGameState = (state) => {
       setFactions(state.factions);
       setCurrentTopic(state.currentTopic);
       setComments(state.comments || []);
       if (state.user) setUser(state.user);
-    });
+    };
 
-    socket.on('comment:new', (comment) => {
-      setComments(prev => [...prev.slice(-199), comment]);
-    });
+    const onCommentNew = (comment) => {
+      setComments(prev => {
+        if (prev.some(c => c.id === comment.id)) return prev; // 防重複
+        return [...prev.slice(-199), comment];
+      });
+    };
 
-    socket.on('comment:updated', (updated) => {
+    const onCommentUpdated = (updated) => {
       setComments(prev => prev.map(c => c.id === updated.id ? updated : c));
-    });
+    };
 
-    socket.on('factions:updated', (updated) => {
-      setFactions(updated);
-    });
+    const onFactionsUpdated = (updated) => setFactions(updated);
 
-    socket.on('battle:critical', ({ comment, damage, attacker, factions: updatedFactions }) => {
+    const onBattleCritical = ({ comment, damage, attacker, factions: updatedFactions }) => {
       setFactions(updatedFactions);
       setCriticalHit({ comment, damage, attacker });
       setTimeout(() => setCriticalHit(null), 3000);
-    });
+    };
 
-    socket.on('barrage:fire', (barrage) => {
+    const onBarrageFire = (barrage) => {
       const id = Date.now() + Math.random();
       setBarrages(prev => [...prev, { ...barrage, id, top: Math.random() * 70 + 10 }]);
       setTimeout(() => setBarrages(prev => prev.filter(b => b.id !== id)), 8000);
-    });
+    };
 
-    socket.on('faction:message', (msg) => {
+    const onFactionMessage = (msg) => {
       setFactionMessages(prev => [...prev.slice(-99), msg]);
-    });
+    };
 
-    socket.on('prison:enter', ({ message }) => {
+    const onPrisonEnter = ({ message }) => {
       setIsPrisoner(true);
       addNotification(message, 'error');
-    });
+    };
 
-    socket.on('prison:announce', ({ username, faction }) => {
+    const onPrisonAnnounce = ({ username, faction }) => {
       addNotification(`🐢 ${username}（${faction.name}）被關進太平洋戰俘營！`, 'warning');
-    });
+    };
 
-    socket.on('user:joined', ({ username, faction }) => {
+    const onUserJoined = ({ username, faction }) => {
       addNotification(`${faction.emoji} ${username} 加入了 ${faction.name}！`, 'info');
-    });
+    };
 
-    socket.on('battle:reset', (state) => {
+    const onBattleReset = (state) => {
       setFactions(state.factions);
       setCurrentTopic(state.currentTopic);
       setComments([]);
       addNotification('🔔 新的一天！烽火台重置！開始新的戰役！', 'success');
-    });
+    };
 
-    socket.on('error', ({ message }) => {
-      addNotification(message, 'error');
-    });
+    const onError = ({ message }) => addNotification(message, 'error');
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    socket.on('game:state', onGameState);
+    socket.on('comment:new', onCommentNew);
+    socket.on('comment:updated', onCommentUpdated);
+    socket.on('factions:updated', onFactionsUpdated);
+    socket.on('battle:critical', onBattleCritical);
+    socket.on('barrage:fire', onBarrageFire);
+    socket.on('faction:message', onFactionMessage);
+    socket.on('prison:enter', onPrisonEnter);
+    socket.on('prison:announce', onPrisonAnnounce);
+    socket.on('user:joined', onUserJoined);
+    socket.on('battle:reset', onBattleReset);
+    socket.on('error', onError);
 
     return () => {
-      socket.off('connect');
-      socket.off('disconnect');
-      socket.off('game:state');
-      socket.off('comment:new');
-      socket.off('comment:updated');
-      socket.off('factions:updated');
-      socket.off('battle:critical');
-      socket.off('barrage:fire');
-      socket.off('faction:message');
-      socket.off('prison:enter');
-      socket.off('prison:announce');
-      socket.off('user:joined');
-      socket.off('battle:reset');
-      socket.off('error');
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+      socket.off('game:state', onGameState);
+      socket.off('comment:new', onCommentNew);
+      socket.off('comment:updated', onCommentUpdated);
+      socket.off('factions:updated', onFactionsUpdated);
+      socket.off('battle:critical', onBattleCritical);
+      socket.off('barrage:fire', onBarrageFire);
+      socket.off('faction:message', onFactionMessage);
+      socket.off('prison:enter', onPrisonEnter);
+      socket.off('prison:announce', onPrisonAnnounce);
+      socket.off('user:joined', onUserJoined);
+      socket.off('battle:reset', onBattleReset);
+      socket.off('error', onError);
+      listenersRef.current = false;
     };
   }, [addNotification]);
 

@@ -11,10 +11,18 @@
       "Bash(chmod +x \"/Users/a21106690/Desktop/Project Horizon/start.sh\")",
       "Bash(node src/server.js)",
       "Bash(echo \"Backend status: $?\")",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(gh auth:*)",
+      "Bash(git --version)",
+      "Bash(curl -s https://api.github.com)",
+      "Bash(ssh -T git@github.com)",
+      "Bash(git config:*)",
+      "Read(//Users/a21106690/**)",
+      "Bash(ssh-keygen -t ed25519 -C \"s21106690@github\" -f ~/.ssh/id_ed25519 -N \"\")"
     ],
     "additionalDirectories": [
-      "/Users/a21106690/Desktop/Project Horizon/frontend/src"
+      "/Users/a21106690/Desktop/Project Horizon/frontend/src",
+      "/Users/a21106690/.ssh"
     ]
   }
 }
