@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useGame, FACTIONS } from '../context/GameContext';
 
 // 模擬歷史週報資料
@@ -9,7 +9,8 @@ const WEEKLY_HISTORY = [
 ];
 
 export default function TribunalPage() {
-  const { factions, user, setPage } = useGame();
+  const { factions, user, setPage, FACTIONS: ctxFactions } = useGame();
+  const userFactionInfo = user ? FACTIONS[user.faction] : null;
   const [defeatFilter, setDefeatFilter] = useState(false);
 
   const userFaction = user?.faction;
@@ -165,6 +166,26 @@ export default function TribunalPage() {
           })}
         </div>
       </div>
+
+      {/* 手機底部導覽列 */}
+      <nav className="mobile-bottom-nav">
+        <button className="mobile-nav-btn" onClick={() => setPage('arena')}>
+          <span className="mobile-nav-icon">⚔️</span>
+          戰場
+        </button>
+        <button className="mobile-nav-btn" onClick={() => setPage('chat')}>
+          <span className="mobile-nav-icon">💬</span>
+          同溫層
+        </button>
+        <button className="mobile-nav-btn active" onClick={() => setPage('tribunal')}>
+          <span className="mobile-nav-icon">📊</span>
+          戰報
+        </button>
+        <div className="mobile-nav-btn" style={{ cursor: 'default' }}>
+          <span className="mobile-nav-icon">{userFactionInfo?.emoji || '👤'}</span>
+          <span style={{ color: userFactionInfo?.color, fontSize: 9 }}>{userFactionInfo?.name}</span>
+        </div>
+      </nav>
     </div>
   );
 }

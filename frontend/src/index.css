@@ -1243,11 +1243,26 @@ ul { list-style: none; }
 .title-name { flex: 1; font-size: 13px; color: var(--text-muted); }
 .title-level { font-size: 10px; color: var(--color); font-weight: 700; }
 
-/* ─── Responsive ────────────────────────────────────────────────────────────── */
+/* ─── Mobile Bottom Nav（手機版底部導覽，僅在戰場顯示）────────────────────── */
+.mobile-bottom-nav {
+  display: none;
+}
+
+/* ─── Responsive：平板 ≤ 1024px ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .arena-layout {
+    grid-template-columns: 240px 1fr;
+  }
+  .arena-right { display: none; }
+}
+
+/* ─── Responsive：小平板 ≤ 900px ────────────────────────────────────────────── */
 @media (max-width: 900px) {
+  /* Arena */
   .arena-layout {
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr auto;
+    padding-bottom: 60px; /* 留給底部導覽列 */
   }
 
   .arena-sidebar {
@@ -1255,24 +1270,143 @@ ul { list-style: none; }
     border-bottom: 1px solid var(--border);
     flex-direction: row;
     flex-wrap: wrap;
+    align-items: flex-start;
     gap: 10px;
     padding: 12px;
+    overflow-x: auto;
   }
 
+  .sidebar-title { width: 100%; }
+  .hp-bars-container { flex-direction: row; flex-wrap: wrap; gap: 8px; flex: 1; }
+  .hp-bar-item { min-width: 130px; flex: 1; }
+  .topic-box { flex: 1; min-width: 200px; }
+  .rules-box { display: none; }
   .arena-right { display: none; }
 
-  .hp-bars-container { flex-direction: row; flex-wrap: wrap; gap: 8px; }
-  .hp-bar-item { min-width: 140px; }
+  /* 顯示底部導覽 */
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 56px;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+    z-index: 200;
+    align-items: stretch;
+  }
 
+  .mobile-nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color .2s, background .2s;
+    border-right: 1px solid var(--border);
+  }
+
+  .mobile-nav-btn:last-child { border-right: none; }
+  .mobile-nav-btn:hover, .mobile-nav-btn.active { color: var(--text); background: rgba(255,255,255,0.05); }
+  .mobile-nav-btn .mobile-nav-icon { font-size: 20px; }
+
+  /* Chat */
   .chat-layout { grid-template-columns: 1fr; }
   .tactics-sidebar { display: none; }
+  .chat-page { padding-bottom: 60px; }
 
+  /* Tribunal */
   .tribunal-header .back-btn { position: static; transform: none; }
   .tribunal-header { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+  .tribunal-page { padding-bottom: 60px; }
+  .prediction-box { flex-direction: column; }
+  .titles-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
 }
 
-@media (max-width: 600px) {
-  .faction-grid { grid-template-columns: 1fr; }
-  .arena-nav { flex-direction: column; gap: 8px; }
-  .landing-title { font-size: 42px; }
+/* ─── Responsive：手機 ≤ 640px ──────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* Landing */
+  .landing-title { font-size: 38px; letter-spacing: -1px; }
+  .title-sub { letter-spacing: 4px; }
+  .landing-slogan { font-size: 13px; }
+  .faction-preview { gap: 6px; }
+  .faction-preview-card { min-width: 80px; padding: 10px; }
+  .faction-preview-emoji { font-size: 22px; }
+  .faction-preview-name { font-size: 12px; }
+  .faction-preview-desc { display: none; }
+  .landing-features { gap: 8px; }
+  .feature-item { font-size: 12px; padding: 6px 12px; }
+  .landing-btn { font-size: 15px; padding: 14px 32px; }
+
+  /* Faction Select */
+  .faction-select-page { padding: 16px 12px 120px; }
+  .select-header h2 { font-size: 22px; }
+  .faction-grid { grid-template-columns: 1fr; gap: 12px; }
+  .fc-stats { flex-direction: row; gap: 12px; }
+  .fc-stat { flex-direction: column; gap: 2px; }
+  .join-panel { padding: 20px 12px 20px; gap: 8px; }
+  .username-input { width: 100%; }
+  .join-btn { width: 100%; text-align: center; }
+
+  /* Arena Nav */
+  .arena-nav { padding: 10px 12px; }
+  .nav-logo { font-size: 14px; }
+  .nav-faction { font-size: 12px; }
+  .nav-right { display: none; } /* 右側按鈕移到底部導覽 */
+
+  /* Comments */
+  .comments-feed { padding: 10px 12px; gap: 8px; }
+  .comments-header { padding: 10px 12px; }
+  .comment-input-area { padding: 10px 12px; }
+  .input-row { flex-wrap: wrap; gap: 6px; }
+  .input-faction-badge { font-size: 10px; }
+  .comment-input { font-size: 13px; }
+  .post-btn { font-size: 13px; padding: 8px 14px; }
+
+  /* Comment Card */
+  .comment-card { padding: 10px 12px; }
+  .comment-text { font-size: 13px; }
+  .comment-username { font-size: 12px; }
+  .vote-btn { padding: 4px 10px; font-size: 12px; }
+
+  /* HP Bar（側欄收起時的水平排列）*/
+  .hp-bar-item { min-width: 110px; }
+  .hp-faction-name { font-size: 11px; }
+  .hp-value { font-size: 10px; }
+
+  /* Chat */
+  .chat-header { padding: 10px 12px; gap: 10px; }
+  .chat-title h2 { font-size: 15px; }
+  .messages-list { padding: 10px 12px; }
+  .chat-input-row { padding: 10px 12px; }
+  .message-text { font-size: 13px; padding: 8px 12px; }
+
+  /* Critical Hit */
+  .critical-title { font-size: 32px; }
+  .critical-attacker { font-size: 16px; }
+  .critical-comment { font-size: 14px; }
+
+  /* Tribunal */
+  .tribunal-section { padding: 0 12px; }
+  .ranking-row { padding: 10px 12px; gap: 8px; }
+  .rank-name { font-size: 14px; }
+  .rank-hp-text { font-size: 12px; }
+  .history-item { padding: 12px; }
+  .titles-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* ─── Responsive：超小手機 ≤ 380px ──────────────────────────────────────────── */
+@media (max-width: 380px) {
+  .landing-title { font-size: 30px; }
+  .faction-preview { display: none; }
+  .landing-features { display: none; }
+  .landing-btn { font-size: 14px; padding: 12px 24px; }
+  .hp-bar-item { min-width: 90px; }
+  .titles-grid { grid-template-columns: 1fr; }
 }

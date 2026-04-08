@@ -113,6 +113,26 @@ export default function ChatPage() {
           </div>
         </aside>
       </div>
+
+      {/* 手機底部導覽列 */}
+      <nav className="mobile-bottom-nav">
+        <button className="mobile-nav-btn" onClick={() => setPage('arena')}>
+          <span className="mobile-nav-icon">⚔️</span>
+          戰場
+        </button>
+        <button className="mobile-nav-btn active" onClick={() => setPage('chat')}>
+          <span className="mobile-nav-icon">💬</span>
+          同溫層
+        </button>
+        <button className="mobile-nav-btn" onClick={() => setPage('tribunal')}>
+          <span className="mobile-nav-icon">📊</span>
+          戰報
+        </button>
+        <div className="mobile-nav-btn" style={{ cursor: 'default' }}>
+          <span className="mobile-nav-icon">{fInfo?.emoji || '👤'}</span>
+          <span style={{ color: fInfo?.color, fontSize: 9 }}>{fInfo?.name}</span>
+        </div>
+      </nav>
     </div>
   );
 }
