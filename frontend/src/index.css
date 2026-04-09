@@ -1562,7 +1562,8 @@ ul { list-style: none; }
 
 /* ─── Rulebook Page ─────────────────────────────────────────────────────────── */
 .rulebook-page {
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   background: var(--bg-dark);
   display: flex;
   flex-direction: column;
@@ -1594,7 +1595,7 @@ ul { list-style: none; }
   grid-template-columns: 220px 1fr;
   flex: 1;
   overflow: hidden;
-  max-height: calc(100vh - 65px);
+  min-height: 0;
 }
 
 /* 目錄側欄 */
@@ -1977,10 +1978,10 @@ ul { list-style: none; }
   .chat-page { padding-bottom: 60px; }
 
   /* Rulebook */
+  .rulebook-page { height: calc(100vh - 56px); }
   .rulebook-layout {
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr;
-    max-height: calc(100vh - 65px - 56px);
   }
 
   .rulebook-nav {
@@ -2010,7 +2011,7 @@ ul { list-style: none; }
   }
 
   .chapter-title { text-align: center; }
-  .rulebook-content { padding: 20px 16px; overflow-y: auto; max-height: none; }
+  .rulebook-content { padding: 20px 16px; overflow-y: auto; }
 
   /* Tribunal */
   .tribunal-header .back-btn { position: static; transform: none; }

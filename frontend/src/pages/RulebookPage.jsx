@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useGame, FACTIONS } from '../context/GameContext';
 
 const CHAPTERS = [
@@ -209,6 +209,11 @@ const CHAPTERS = [
 export default function RulebookPage() {
   const { setPage, user } = useGame();
   const [activeChapter, setActiveChapter] = useState('intro');
+  const contentRef = useRef(null);
+
+  useEffect(() => {
+    contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeChapter]);
 
   const chapter = CHAPTERS.find(c => c.id === activeChapter);
 
@@ -240,7 +245,7 @@ export default function RulebookPage() {
         </nav>
 
         {/* 內容區 */}
-        <div className="rulebook-content">
+        <div className="rulebook-content" ref={contentRef}>
           <div className="chapter-header">
             <span className="chapter-big-icon">{chapter.icon}</span>
             <h2>{chapter.title}</h2>
