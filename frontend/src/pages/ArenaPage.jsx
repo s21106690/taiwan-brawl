@@ -87,13 +87,22 @@ export default function ArenaPage() {
           </div>
 
           <div className="rules-box">
-            <div className="rules-title">📜 戰場規則</div>
+            <div className="rules-section-label attack">⚔️ 攻擊</div>
             <ul className="rules-list">
               <li>👎 倒讚 → 攻擊對方陣營</li>
-              <li>💢 重拳（×10/h）→ 8 傷害</li>
-              <li>🎯 集火 3 人 → ×1.5 傷害</li>
-              <li>🌋 3 倍倒讚 → 地區大地震</li>
-              <li>👍 同陣營按讚 → 回血</li>
+              <li>💢 重拳限 10 次/小時（8 傷）</li>
+              <li>🎯 30 秒內 3 人倒讚 → ×1.5</li>
+              <li>🌋 倒讚 ≥ 3 倍按讚 → 大地震</li>
+            </ul>
+            <div className="rules-section-label defend">🛡️ 防守</div>
+            <ul className="rules-list">
+              <li>👍 同陣營按讚 → 回血 3 點</li>
+              <li>💥 5 讚 → 暴擊！額外回血 20</li>
+              <li>🐍 按讚敵方 → 己方扣 2 血！</li>
+            </ul>
+            <div className="rules-section-label danger">💀 危機</div>
+            <ul className="rules-list">
+              <li>🐢 8 倒讚 → 入太平洋戰俘營</li>
               <li>💀 血量歸零 → 淪陷觀戰</li>
             </ul>
           </div>

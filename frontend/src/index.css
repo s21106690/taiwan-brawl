@@ -609,8 +609,24 @@ ul { list-style: none; }
   text-transform: uppercase;
 }
 
-.rules-list { display: flex; flex-direction: column; gap: 7px; }
-.rules-list li { font-size: 12px; color: var(--text-muted); }
+.rules-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  padding: 4px 6px;
+  border-radius: 4px;
+  margin: 8px 0 5px;
+  display: inline-block;
+}
+
+.rules-section-label:first-child { margin-top: 0; }
+.rules-section-label.attack  { background: rgba(239,68,68,.15);  color: #fca5a5; }
+.rules-section-label.defend  { background: rgba(34,197,94,.15);  color: #86efac; }
+.rules-section-label.danger  { background: rgba(245,158,11,.12); color: #fcd34d; }
+
+.rules-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 2px; }
+.rules-list li { font-size: 11.5px; color: var(--text-muted); }
 
 /* ─── Arena Main ────────────────────────────────────────────────────────────── */
 .arena-main {
@@ -1919,7 +1935,7 @@ ul { list-style: none; }
   .hp-bars-container { flex-direction: row; flex-wrap: wrap; gap: 8px; flex: 1; }
   .hp-bar-item { min-width: 130px; flex: 1; }
   .topic-box { flex: 1; min-width: 200px; }
-  .rules-box { display: none; }
+  .rules-box { display: none; }   /* 手機改由底部規則書頁查看 */
   .arena-right { display: none; }
 
   /* 顯示底部導覽 */
