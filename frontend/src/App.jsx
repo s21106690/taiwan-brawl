@@ -5,6 +5,7 @@ import FactionSelectPage from './pages/FactionSelectPage';
 import ArenaPage from './pages/ArenaPage';
 import ChatPage from './pages/ChatPage';
 import TribunalPage from './pages/TribunalPage';
+import RulebookPage from './pages/RulebookPage';
 import Notifications from './components/Notifications';
 
 function AppContent() {
@@ -18,6 +19,7 @@ function AppContent() {
       {page === 'arena' && <ArenaPage />}
       {page === 'chat' && <ChatPage />}
       {page === 'tribunal' && <TribunalPage />}
+      {page === 'rulebook' && <RulebookPage />}
     </div>
   );
 }

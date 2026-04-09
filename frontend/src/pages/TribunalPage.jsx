@@ -181,10 +181,10 @@ export default function TribunalPage() {
           <span className="mobile-nav-icon">📊</span>
           戰報
         </button>
-        <div className="mobile-nav-btn" style={{ cursor: 'default' }}>
-          <span className="mobile-nav-icon">{userFactionInfo?.emoji || '👤'}</span>
-          <span style={{ color: userFactionInfo?.color, fontSize: 9 }}>{userFactionInfo?.name}</span>
-        </div>
+        <button className="mobile-nav-btn" onClick={() => setPage('rulebook')}>
+          <span className="mobile-nav-icon">📖</span>
+          規則書
+        </button>
       </nav>
     </div>
   );

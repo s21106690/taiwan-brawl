@@ -57,12 +57,20 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <button
-          className="landing-btn"
-          onClick={() => setPage('select')}
-        >
-          ⚔️ 選擇陣營・參戰！
-        </button>
+        <div className="landing-cta-row">
+          <button
+            className="landing-btn"
+            onClick={() => setPage('select')}
+          >
+            ⚔️ 選擇陣營・參戰！
+          </button>
+          <button
+            className="landing-rule-btn"
+            onClick={() => setPage('rulebook')}
+          >
+            📖 規則書
+          </button>
+        </div>
 
         <div className={`connection-status ${connected ? 'connected' : 'disconnected'}`}>
           <span className="status-dot" />

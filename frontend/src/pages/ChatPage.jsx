@@ -128,10 +128,10 @@ export default function ChatPage() {
           <span className="mobile-nav-icon">📊</span>
           戰報
         </button>
-        <div className="mobile-nav-btn" style={{ cursor: 'default' }}>
-          <span className="mobile-nav-icon">{fInfo?.emoji || '👤'}</span>
-          <span style={{ color: fInfo?.color, fontSize: 9 }}>{fInfo?.name}</span>
-        </div>
+        <button className="mobile-nav-btn" onClick={() => setPage('rulebook')}>
+          <span className="mobile-nav-icon">📖</span>
+          規則書
+        </button>
       </nav>
     </div>
   );

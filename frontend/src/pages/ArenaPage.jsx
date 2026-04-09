@@ -46,6 +46,9 @@ export default function ArenaPage() {
           <button className="nav-btn" onClick={() => setPage('tribunal')}>
             📊 每週戰報
           </button>
+          <button className="nav-btn" onClick={() => setPage('rulebook')}>
+            📖 規則書
+          </button>
         </div>
       </nav>
 
@@ -171,10 +174,10 @@ export default function ArenaPage() {
           <span className="mobile-nav-icon">📊</span>
           戰報
         </button>
-        <div className="mobile-nav-btn" style={{ cursor: 'default' }}>
-          <span className="mobile-nav-icon">{fInfo?.emoji || '👤'}</span>
-          <span style={{ color: fInfo?.color, fontSize: 9 }}>{fInfo?.name}</span>
-        </div>
+        <button className="mobile-nav-btn" onClick={() => setPage('rulebook')}>
+          <span className="mobile-nav-icon">📖</span>
+          規則書
+        </button>
       </nav>
     </div>
   );
