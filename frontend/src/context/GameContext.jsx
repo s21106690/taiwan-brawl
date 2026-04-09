@@ -4,11 +4,11 @@ import socket from '../socket';
 const GameContext = createContext(null);
 
 export const FACTIONS = {
-  north: { id: 'north', name: '天龍北', emoji: '🐉', color: '#4f46e5', bg: '#eef2ff' },
+  north:   { id: 'north',   name: '天龍北', emoji: '🐉', color: '#4f46e5', bg: '#eef2ff' },
   central: { id: 'central', name: '慶記中', emoji: '🦁', color: '#dc2626', bg: '#fef2f2' },
-  south: { id: 'south', name: '暖男南', emoji: '🌊', color: '#0891b2', bg: '#ecfeff' },
-  east: { id: 'east', name: '好山東', emoji: '🏔️', color: '#16a34a', bg: '#f0fdf4' },
-  island: { id: 'island', name: '外島幫', emoji: '🏝️', color: '#d97706', bg: '#fffbeb' },
+  south:   { id: 'south',   name: '暖男南', emoji: '🌊', color: '#0891b2', bg: '#ecfeff' },
+  east:    { id: 'east',    name: '好山東', emoji: '🏔️', color: '#16a34a', bg: '#f0fdf4' },
+  island:  { id: 'island',  name: '外島幫', emoji: '🏝️', color: '#d97706', bg: '#fffbeb' },
 };
 
 export function GameProvider({ children }) {
@@ -22,22 +22,26 @@ export function GameProvider({ children }) {
   const [isPrisoner, setIsPrisoner] = useState(false);
   const [connected, setConnected] = useState(false);
   const [criticalHit, setCriticalHit] = useState(null);
-  const [page, setPage] = useState('landing'); // landing | select | arena | chat | tribunal
+  const [earthquake, setEarthquake] = useState(null);
+  const [focusFire, setFocusFire] = useState(null);
+  const [victory, setVictory] = useState(null);           // { winner, champion, heroHall, celebrationEndsAt }
+  const [heroHall, setHeroHall] = useState([]);
+  const [dislikeInfo, setDislikeInfo] = useState({ remaining: 10, isHeavy: true });
+  const [page, setPage] = useState('landing');
 
   const addNotification = useCallback((msg, type = 'info') => {
-    const id = Date.now();
+    const id = Date.now() + Math.random();
     setNotifications(prev => [...prev, { id, msg, type }]);
     setTimeout(() => setNotifications(prev => prev.filter(n => n.id !== id)), 4000);
   }, []);
 
-  // 用 ref 持有 addNotification，讓 effect 可以用 [] 作為 dependency
   const addNotificationRef = useRef(addNotification);
   useEffect(() => { addNotificationRef.current = addNotification; }, [addNotification]);
 
   useEffect(() => {
     socket.connect();
 
-    const onConnect = () => setConnected(true);
+    const onConnect    = () => setConnected(true);
     const onDisconnect = () => setConnected(false);
 
     const onGameState = (state) => {
@@ -45,11 +49,15 @@ export function GameProvider({ children }) {
       setCurrentTopic(state.currentTopic);
       setComments(state.comments || []);
       if (state.user) setUser(state.user);
+      if (state.heroHall) setHeroHall(state.heroHall);
+      if (state.victoryAnnounced && state.winner) {
+        setVictory({ winner: state.winner, celebrationEndsAt: state.celebrationEndsAt, heroHall: state.heroHall });
+      }
     };
 
     const onCommentNew = (comment) => {
       setComments(prev => {
-        if (prev.some(c => c.id === comment.id)) return prev; // 防重複
+        if (prev.some(c => c.id === comment.id)) return prev;
         return [...prev.slice(-199), comment];
       });
     };
@@ -60,10 +68,42 @@ export function GameProvider({ children }) {
 
     const onFactionsUpdated = (updated) => setFactions(updated);
 
-    const onBattleCritical = ({ comment, damage, attacker, factions: updatedFactions }) => {
-      setFactions(updatedFactions);
-      setCriticalHit({ comment, damage, attacker });
+    const onBattleCritical = ({ comment, bonus, attacker, factions: f }) => {
+      if (f) setFactions(f);
+      setCriticalHit({ comment, bonus, attacker });
       setTimeout(() => setCriticalHit(null), 3000);
+    };
+
+    const onBattleEarthquake = ({ comment, damage, faction, factions: f }) => {
+      if (f) setFactions(f);
+      setEarthquake({ comment, damage, faction });
+      addNotificationRef.current(`🌋 地區大地震！${faction.name} 受到 ${Math.round(damage)} 點毀滅傷害！`, 'error');
+      setTimeout(() => setEarthquake(null), 4000);
+    };
+
+    const onBattleFocus = ({ username, faction, multiplier }) => {
+      setFocusFire({ username, faction, multiplier });
+      addNotificationRef.current(`🎯 集火攻擊！${faction.name}「${username}」被圍毆，傷害 ×${multiplier}！`, 'warning');
+      setTimeout(() => setFocusFire(null), 3000);
+    };
+
+    const onFactionFallen = ({ faction }) => {
+      addNotificationRef.current(`💀 ${faction.emoji} ${faction.name} 已淪陷！進入觀戰模式！`, 'error');
+    };
+
+    const onBattleVictory = (data) => {
+      setVictory(data);
+      setHeroHall(data.heroHall || []);
+      addNotificationRef.current(`🏆 ${data.winner.emoji} ${data.winner.name} 奪得台灣之霸！`, 'success');
+    };
+
+    const onBattleReset = (state) => {
+      setFactions(state.factions);
+      setCurrentTopic(state.currentTopic);
+      setComments([]);
+      setVictory(null);
+      if (state.heroHall) setHeroHall(state.heroHall);
+      addNotificationRef.current('🔔 新的一輪開始！', 'success');
     };
 
     const onBarrageFire = (barrage) => {
@@ -89,11 +129,12 @@ export function GameProvider({ children }) {
       addNotificationRef.current(`${faction.emoji} ${username} 加入了 ${faction.name}！`, 'info');
     };
 
-    const onBattleReset = (state) => {
-      setFactions(state.factions);
-      setCurrentTopic(state.currentTopic);
-      setComments([]);
-      addNotificationRef.current('🔔 新的一天！烽火台重置！開始新的戰役！', 'success');
+    const onVoteInfo = ({ remaining, isHeavy }) => {
+      setDislikeInfo({ remaining, isHeavy });
+    };
+
+    const onVoteTraitor = ({ message }) => {
+      addNotificationRef.current(message, 'warning');
     };
 
     const onError = ({ message }) => addNotificationRef.current(message, 'error');
@@ -105,12 +146,18 @@ export function GameProvider({ children }) {
     socket.on('comment:updated', onCommentUpdated);
     socket.on('factions:updated', onFactionsUpdated);
     socket.on('battle:critical', onBattleCritical);
+    socket.on('battle:earthquake', onBattleEarthquake);
+    socket.on('battle:focus', onBattleFocus);
+    socket.on('battle:victory', onBattleVictory);
+    socket.on('battle:reset', onBattleReset);
+    socket.on('faction:fallen', onFactionFallen);
     socket.on('barrage:fire', onBarrageFire);
     socket.on('faction:message', onFactionMessage);
     socket.on('prison:enter', onPrisonEnter);
     socket.on('prison:announce', onPrisonAnnounce);
     socket.on('user:joined', onUserJoined);
-    socket.on('battle:reset', onBattleReset);
+    socket.on('vote:info', onVoteInfo);
+    socket.on('vote:traitor', onVoteTraitor);
     socket.on('error', onError);
 
     return () => {
@@ -121,40 +168,38 @@ export function GameProvider({ children }) {
       socket.off('comment:updated', onCommentUpdated);
       socket.off('factions:updated', onFactionsUpdated);
       socket.off('battle:critical', onBattleCritical);
+      socket.off('battle:earthquake', onBattleEarthquake);
+      socket.off('battle:focus', onBattleFocus);
+      socket.off('battle:victory', onBattleVictory);
+      socket.off('battle:reset', onBattleReset);
+      socket.off('faction:fallen', onFactionFallen);
       socket.off('barrage:fire', onBarrageFire);
       socket.off('faction:message', onFactionMessage);
       socket.off('prison:enter', onPrisonEnter);
       socket.off('prison:announce', onPrisonAnnounce);
       socket.off('user:joined', onUserJoined);
-      socket.off('battle:reset', onBattleReset);
+      socket.off('vote:info', onVoteInfo);
+      socket.off('vote:traitor', onVoteTraitor);
       socket.off('error', onError);
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const joinGame = useCallback((username, faction) => {
-    const userData = { username, faction };
-    socket.emit('user:join', userData);
+    socket.emit('user:join', { username, faction });
     setUser({ username, faction, isPrisoner: false });
     setPage('arena');
   }, []);
 
-  const postComment = useCallback((text) => {
-    socket.emit('comment:post', { text });
-  }, []);
-
-  const voteComment = useCallback((commentId, vote) => {
-    socket.emit('comment:vote', { commentId, vote });
-  }, []);
-
-  const sendFactionMessage = useCallback((message) => {
-    socket.emit('faction:chat', { message });
-  }, []);
+  const postComment  = useCallback((text) => socket.emit('comment:post', { text }), []);
+  const voteComment  = useCallback((commentId, vote) => socket.emit('comment:vote', { commentId, vote }), []);
+  const sendFactionMessage = useCallback((message) => socket.emit('faction:chat', { message }), []);
 
   return (
     <GameContext.Provider value={{
       user, factions, currentTopic, comments, barrages,
       factionMessages, notifications, isPrisoner, connected,
-      criticalHit, page, setPage,
+      criticalHit, earthquake, focusFire, victory, heroHall,
+      dislikeInfo, page, setPage,
       joinGame, postComment, voteComment, sendFactionMessage,
       FACTIONS,
     }}>

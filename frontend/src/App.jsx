@@ -6,6 +6,7 @@ import ArenaPage from './pages/ArenaPage';
 import ChatPage from './pages/ChatPage';
 import TribunalPage from './pages/TribunalPage';
 import RulebookPage from './pages/RulebookPage';
+import VictoryScreen from './components/VictoryScreen';
 import Notifications from './components/Notifications';
 
 function AppContent() {
@@ -14,6 +15,7 @@ function AppContent() {
   return (
     <div className="app">
       <Notifications />
+      <VictoryScreen />
       {page === 'landing' && <LandingPage />}
       {page === 'select' && <FactionSelectPage />}
       {page === 'arena' && <ArenaPage />}
