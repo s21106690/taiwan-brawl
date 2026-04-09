@@ -9,16 +9,17 @@ const CHAPTERS = [
     sections: [
       {
         subtitle: '這是什麼地方？',
-        content: '寶島大亂鬥是一個讓台灣各地網友「合法互撕」的競技平台。每天晚上 8 點，系統發布一道引戰題，全台五大陣營互相廝殺，用留言和按讚決定勝負。',
+        content: '寶島大亂鬥是一個讓台灣各地網友「合法互撕」的生存競技平台。五大陣營同台廝殺，靠著留言、按讚、倒讚決定勝負——最後存活的陣營，就是本輪台灣之霸！',
       },
       {
         subtitle: '基本流程',
         steps: [
           '選擇陣營，宣誓效忠（三個月不得叛逃）',
           '進入烽火台，看今日引戰題',
-          '發表你的戰狼留言，替陣營攻打敵人',
-          '幫己方的好留言按讚，讓它造成暴擊！',
-          '週末結算勝負，輸的人受罰',
+          '發表你的戰狼留言，讓敵人有機可倒讚',
+          '瘋狂倒讚敵方留言，造成傷害！',
+          '同陣營互相按讚，補充血量！',
+          '讓敵方血條歸零→淪陷，最後存活者就是王者',
         ],
       },
     ],
@@ -41,26 +42,73 @@ const CHAPTERS = [
     ],
   },
   {
-    id: 'arena',
+    id: 'combat',
     icon: '🔥',
-    title: '每日烽火台',
+    title: '戰鬥機制',
     sections: [
       {
-        subtitle: '戰場規則',
-        content: '每天晚上 8 點，系統自動發布一道「引戰題」，題目精準踩在台灣人的痛點上。每個陣營有 1000 點血條，靠留言互相廝殺。',
+        subtitle: '核心原則',
+        content: '留言本身不造成傷害——傷害來自「按讚」與「倒讚」的互動。你要讓對方的爛留言被瘋狂倒讚，同時保護己方的好留言！',
       },
       {
-        subtitle: '傷害判定系統',
+        subtitle: '倒讚：主要攻擊手段',
         damages: [
-          { icon: '👍', label: '按讚（一般）', effect: '對所有敵方陣營各造成 1 點傷害', color: '#22c55e', type: 'good' },
-          { icon: '💥', label: '暴擊（5 讚以上）', effect: '觸發暴擊！留言繼續獲讚，每讚追加 3 點傷害', color: '#f59e0b', type: 'great' },
-          { icon: '👎', label: '倒讚（一般）', effect: '對自己陣營造成 1 點友軍傷害（發廢言要付出代價！）', color: '#ef4444', type: 'bad' },
-          { icon: '🐢', label: '8 個倒讚', effect: '發言者被關進太平洋戰俘營，禁言 24 小時！', color: '#dc2626', type: 'terrible' },
+          {
+            icon: '💢',
+            label: '重拳倒讚（每小時限 10 次）',
+            effect: '每次造成 8 點傷害，直接扣對方陣營血條。額度用盡前，火力全開！',
+            color: '#ef4444',
+            type: 'terrible',
+          },
+          {
+            icon: '👎',
+            label: '普通倒讚（超出額度後）',
+            effect: '每小時 10 次重拳用盡後，倒讚降為 2 點傷害。仍有效，但不建議浪費在雜魚留言上。',
+            color: '#f97316',
+            type: 'bad',
+          },
+          {
+            icon: '🎯',
+            label: '集火加成（30 秒內 3 人以上同時倒讚）',
+            effect: '短時間內多人圍毆同一則留言，觸發集火加成！傷害 ×1.5 倍，配合同溫層號召更有效！',
+            color: '#f59e0b',
+            type: 'great',
+          },
+          {
+            icon: '🌋',
+            label: '邏輯慘敗（倒讚 ≥ 3 倍按讚，且倒讚 ≥ 5）',
+            effect: '發言被判定「邏輯慘敗」，觸發地區大地震！對該陣營造成一次性 5% 最大血量的毀滅傷害（每則留言只觸發一次）。',
+            color: '#dc2626',
+            type: 'terrible',
+          },
         ],
       },
       {
-        subtitle: '彈幕系統',
-        content: '當一條留言累積 10 個讚，它會以巨大字體橫掃整個螢幕！好的發言讓全場都看到你的名字！',
+        subtitle: '按讚：防守與回血',
+        damages: [
+          {
+            icon: '👍',
+            label: '同陣營按讚（互相補血）',
+            effect: '按讚同陣營的留言，為己方陣營回血 3 點！敵人猛攻時，隊友要拼命互讚來撐住血條！',
+            color: '#22c55e',
+            type: 'good',
+          },
+          {
+            icon: '🐍',
+            label: '跨陣營按讚（背骨仔懲罰）',
+            effect: '按讚敵方留言視為「認同敵人」，己方陣營被扣 2 點血！按讚前想清楚，別做害群之馬！',
+            color: '#8b5cf6',
+            type: 'bad',
+          },
+          {
+            icon: '💥',
+            label: '暴擊留言（累積 5 讚）',
+            effect: '一則留言被己方隊友按到 5 個讚，觸發暴擊！額外為己方回血 20 點，並廣播到全戰場！',
+            color: '#f59e0b',
+            type: 'great',
+          },
+        ],
+        tip: '💡 戰術提示：集中力量倒讚敵方血量最低的陣營，讓他們先淪陷！己方瀕危時，大家快來互讚補血！',
       },
     ],
   },
@@ -70,24 +118,30 @@ const CHAPTERS = [
     title: '進階戰術',
     sections: [
       {
-        subtitle: '同溫層（陣營密室）',
-        content: '點擊頂部「同溫層」進入你的陣營專屬密室。這裡只有自己人看得到，可以擬定戰術，協調攻擊方向。敵方完全無法查看！',
-        tip: '💡 小技巧：在同溫層協調好攻擊方向，集中火力讓同一條留言衝上 5 讚觸發暴擊！',
+        subtitle: '重拳額度管理',
+        content: '每個帳號每小時有 10 次重拳倒讚（8 傷害/次），超出後降為 2 傷害。UI 左側有進度條顯示剩餘次數，合理分配攻擊目標！',
+        tip: '⚔️ 戰術：把重拳留給最有傷害性的留言（例如正在引爆、快要觸發地震的那條），不要浪費在沒人在意的廢文上。',
       },
       {
-        subtitle: '什麼樣的留言最有效？',
+        subtitle: '集火攻擊',
+        content: '30 秒內，有 3 個以上不同玩家倒讚同一則留言，就會觸發集火加成（×1.5 傷害）。這就是同溫層密謀的用處！',
         dos: [
-          '有理有據，附上具體例子',
-          '幽默諷刺，讓人忍不住按讚',
-          '踩在對方陣營的痛點上',
-          '反將一軍，把對方的攻擊變成自己的優勢',
+          '在同溫層貼出目標留言，號召大家一起倒讚',
+          '選擇敵方血量最低的陣營集中攻擊',
+          '優先攻擊剛發出來的熱留言（還在 30 秒窗口內）',
+          '輪流保留重拳額度，確保持續火力',
         ],
         donts: [
-          '無腦飆髒話（容易被倒讚）',
-          '離題廢言（浪費火力）',
-          '對人身攻擊（觸發戰俘營懲罰）',
-          '跳針重複同樣的話（無聊沒有讚）',
+          '分散倒讚到不同留言（無法觸發集火）',
+          '幫敵方留言按讚（背骨仔扣己方血）',
+          '一個人猛刷倒讚（超額後只剩 2 傷害，浪費）',
+          '留言到被圍毆（爛文送人頭）',
         ],
+      },
+      {
+        subtitle: '同溫層（陣營密室）',
+        content: '點擊頂部「同溫層」進入你的陣營專屬密室。這裡只有自己人看得到，可以協調攻擊目標、互相打氣、交換情報。敵方完全無法查看！',
+        tip: '💬 效果最大化：「欸大家快去倒讚北部人那條「北部粽比較優」的文！他們再撐 3 倒讚就地震了！」',
       },
     ],
   },
@@ -98,34 +152,55 @@ const CHAPTERS = [
     sections: [
       {
         subtitle: '什麼情況會被關？',
-        content: '當你的留言累積 8 個倒讚，系統判定為惡意發言或跳針，你將被強制關入太平洋戰俘營。',
+        content: '當你的留言累積 8 個倒讚，系統判定你的論點已被大家否定，你將被強制關入太平洋戰俘營。',
         punishments: [
           '禁言 24 小時，無法在戰場發言',
           '無法使用同溫層聊天室',
           '頭像強制變成海龜 🐢',
-          '全伺服器公告你被關進去的消息（供人嘲笑）',
+          '全伺服器公告你被關進去（供人嘲笑）',
         ],
       },
       {
         subtitle: '如何避免進戰俘營？',
-        content: '發言要有內容，不要只是飆話。就算你很生氣，也要把情緒轉化成有力的論點。空洞的發言是最沒用的武器。',
-        tip: '⚠️ 友情提醒：別忘了你的爛留言也會對自己陣營扣血，你不只害了自己，還害了整個陣營！',
+        content: '對方要 8 次倒讚才能把你送進去，只要留言有一點質量就很難被湊到。要注意：你的爛留言不只是被倒讚，還會讓敵方陣營持續獲得傷害！',
+        tip: '⚠️ 最慘的情況：你發了一條被倒讚 10 次、按讚 1 次的留言 → 邏輯慘敗大地震 + 進戰俘營，一條文讓己方崩盤！',
       },
     ],
   },
   {
-    id: 'tribunal',
-    icon: '📊',
-    title: '每週戰報法庭',
+    id: 'victory',
+    icon: '🏆',
+    title: '獲勝條件與重置',
     sections: [
       {
-        subtitle: '週末結算',
-        content: '每週結算時，依照各陣營剩餘血量決定排名。血量最多的陣營獲勝，血量最少的陣營落敗。',
+        subtitle: '淪陷與存活',
+        content: '當一個陣營的血條歸零，該陣營立即進入「淪陷狀態」。淪陷的玩家無法再發文，只能繼續按讚/倒讚，以旁觀者身份影響戰局。',
+        punishments: [
+          '無法在戰場發言',
+          'HP 條顯示斜線灰色',
+          '仍可按讚/倒讚影響戰局',
+          '等待下一輪重新開戰',
+        ],
       },
       {
-        subtitle: '戰敗懲罰',
-        content: '輸的陣營在下週一登入時，整個網站介面強制套上「戰敗濾鏡」（灰階 + 色調偏移），直到他們在下一場戰役中贏回來！',
-        tip: '🏆 贏家的陣營在當週剩餘時間享有視覺特效加持，讓對手看了眼紅！',
+        subtitle: '台灣之霸',
+        content: '最後一個血條未歸零的陣營，就是本輪「台灣之霸」！全台灣地圖會變成該陣營的代表色，並宣告勝利。',
+        tip: '🏆 勝利獎勵：貢獻最多傷害的玩家獲得「開戰大將軍」封號，並被記錄進英雄塚——永久記錄！',
+      },
+      {
+        subtitle: '慶功模式與重置',
+        steps: [
+          '勝利宣告後進入 30 分鐘「慶功模式」',
+          '贏家可以對輸家進行最後的彈幕嘲諷',
+          '30 分鐘後戰場自動重置，所有血條補滿',
+          '每週日 23:59 若無人勝出，以血量最多者強制勝利',
+          '週一 00:00 全面重置，發布新引戰題，新賽季開始！',
+        ],
+      },
+      {
+        subtitle: '英雄塚',
+        content: '每一輪的「開戰大將軍」（當輪傷害最高的玩家）都會被記錄在英雄塚中，永久展示。勝利畫面可以查看歷屆大將軍排行，讓你的名字流傳戰史！',
+        tip: '📜 想上英雄塚？不是靠亂發文，是靠精準倒讚！找對目標、觸發集火和地震，才能最大化傷害！',
       },
     ],
   },
@@ -221,25 +296,17 @@ export default function RulebookPage() {
                 </div>
               )}
 
-              {sec.tip && (
-                <div className="section-tip">
-                  {sec.tip}
-                </div>
-              )}
+              {sec.tip && <div className="section-tip">{sec.tip}</div>}
 
               {sec.dos && sec.donts && (
                 <div className="dos-donts">
                   <div className="dos">
                     <div className="dos-title">✅ 這樣做</div>
-                    <ul>
-                      {sec.dos.map((d, i) => <li key={i}>{d}</li>)}
-                    </ul>
+                    <ul>{sec.dos.map((d, i) => <li key={i}>{d}</li>)}</ul>
                   </div>
                   <div className="donts">
                     <div className="donts-title">❌ 不要這樣</div>
-                    <ul>
-                      {sec.donts.map((d, i) => <li key={i}>{d}</li>)}
-                    </ul>
+                    <ul>{sec.donts.map((d, i) => <li key={i}>{d}</li>)}</ul>
                   </div>
                 </div>
               )}
@@ -256,29 +323,19 @@ export default function RulebookPage() {
             </div>
           ))}
 
-          {/* 章節切換按鈕 */}
+          {/* 章節切換 */}
           <div className="chapter-nav-btns">
             {CHAPTERS.findIndex(c => c.id === activeChapter) > 0 && (
-              <button
-                className="chapter-prev"
-                onClick={() => {
-                  const idx = CHAPTERS.findIndex(c => c.id === activeChapter);
-                  setActiveChapter(CHAPTERS[idx - 1].id);
-                }}
-              >
-                ← 上一章
-              </button>
+              <button className="chapter-prev" onClick={() => {
+                const idx = CHAPTERS.findIndex(c => c.id === activeChapter);
+                setActiveChapter(CHAPTERS[idx - 1].id);
+              }}>← 上一章</button>
             )}
             {CHAPTERS.findIndex(c => c.id === activeChapter) < CHAPTERS.length - 1 ? (
-              <button
-                className="chapter-next"
-                onClick={() => {
-                  const idx = CHAPTERS.findIndex(c => c.id === activeChapter);
-                  setActiveChapter(CHAPTERS[idx + 1].id);
-                }}
-              >
-                下一章 →
-              </button>
+              <button className="chapter-next" onClick={() => {
+                const idx = CHAPTERS.findIndex(c => c.id === activeChapter);
+                setActiveChapter(CHAPTERS[idx + 1].id);
+              }}>下一章 →</button>
             ) : (
               <button className="chapter-next ready" onClick={() => setPage(user ? 'arena' : 'select')}>
                 {user ? '⚔️ 回到戰場！' : '⚔️ 去選陣營！'}
@@ -292,20 +349,16 @@ export default function RulebookPage() {
       {user && (
         <nav className="mobile-bottom-nav">
           <button className="mobile-nav-btn" onClick={() => setPage('arena')}>
-            <span className="mobile-nav-icon">⚔️</span>
-            戰場
+            <span className="mobile-nav-icon">⚔️</span>戰場
           </button>
           <button className="mobile-nav-btn" onClick={() => setPage('chat')}>
-            <span className="mobile-nav-icon">💬</span>
-            同溫層
+            <span className="mobile-nav-icon">💬</span>同溫層
           </button>
           <button className="mobile-nav-btn" onClick={() => setPage('tribunal')}>
-            <span className="mobile-nav-icon">📊</span>
-            戰報
+            <span className="mobile-nav-icon">📊</span>戰報
           </button>
           <button className="mobile-nav-btn active">
-            <span className="mobile-nav-icon">📖</span>
-            規則書
+            <span className="mobile-nav-icon">📖</span>規則書
           </button>
         </nav>
       )}
